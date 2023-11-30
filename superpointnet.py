@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from .unet_parts import inconv, down
+from unet_parts import inconv, down
 
 
 SUPERPOINT_THRESHOLD = 0.05
@@ -30,7 +30,7 @@ class SuperPointNet(torch.nn.Module):
         self.nms_dist = nms_dist
         self.conf_thresh = conf_thresh
 
-        # self.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model_state_dict'])
+        self.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'))['model_state_dict'])
 
 
     def forward(self, x: torch.Tensor):
