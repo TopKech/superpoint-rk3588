@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from rknn.api import RKNN
 import torch
-from superpointnet import SuperPointNet
+from superpointnet import SuperPointNet, postprocess
 
 
 if __name__ == "__main__":
