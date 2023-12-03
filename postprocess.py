@@ -1,4 +1,4 @@
-from .utils_numpy import flattenDetection, extract_patches, soft_argmax_2d, do_log
+from utils_numpy import flattenDetection, extract_patches, soft_argmax_2d, do_log
 import numpy as np
 
 
@@ -258,3 +258,35 @@ def batch_extract_features(desc, heatmap_nms_batch, residual):
     pts_int = np.stack(pts_int, axis=0)
     pts_desc = np.stack(pts_desc, axis=0)
     return {'pts_int': pts_int, 'pts_desc': pts_desc}
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import pickle
+    import cv2
+    with open("shuttle.pkl", "rb") as f:
+        semi, desc = pickle.load(f)
+    out = postprocess(semi, desc)
+    pts_int8 = out["pts_int"].squeeze()
+
+    image = cv2.imread("space_shuttle_224.jpg", cv2.IMREAD_GRAYSCALE)
+    image = cv2.resize(image, (512, 512))
+
+    plt.figure(figsize=(10,10))
+    plt.imshow(image, cmap="gray")
+    plt.scatter(pts_int8[:,0], pts_int8[:,1])
+    plt.savefig("int8.jpg")
+
+
+    from superpointnet import SuperPointNet
+    import torch
+    sp = SuperPointNet("/Users/topkech/Work/satnav/visual_navigation_satellite/data/models/superPointNet_114000_checkpoint.pth.tar")
+    sp.eval()
+    semi, desc = sp(torch.tensor(image[np.newaxis, np.newaxis, ...]/255, dtype=torch.float32))
+    out = postprocess(semi.detach().numpy(), desc.detach().numpy())
+    pts_fp32 = out["pts_int"].squeeze()
+
+    plt.figure(figsize=(10,10))
+    plt.imshow(image, cmap="gray")
+    plt.scatter(pts_fp32[:,0], pts_fp32[:,1])
+    plt.savefig("fp32.jpg")

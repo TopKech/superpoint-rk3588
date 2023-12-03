@@ -4,7 +4,7 @@ import torch
 import cv2
 import scipy
 
-from .spatial_soft_argmax2d_np import SpatialSoftArgmax2d
+from spatial_soft_argmax2d_np import SpatialSoftArgmax2d
 
 SUPERPOINT_EROSION_KSIZE = 3
 
